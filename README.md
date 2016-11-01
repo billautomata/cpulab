@@ -5,7 +5,5 @@
   * [ ] convert all the Function.Function operators to Function_Function
 * [ ] stream the screen to the browser over web-socket
 
-
-currently working through ppu.js, trying to get all the defintions properly setup
-
-need to finish papu.js
+add these guys all over hte place
+* `if (!(this instanceof JSNES_CPU)) return new JSNES_CPU(nes)`
