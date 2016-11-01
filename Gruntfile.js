@@ -3,6 +3,7 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch')
   grunt.loadNpmTasks('grunt-express-server')
   grunt.loadNpmTasks('grunt-standard')
+  grunt.loadNpmTasks('grunt-run')
 
   // grunt.registerTask('serve', [ 'browserify', 'express:dev', 'watch'])
   grunt.registerTask('default', ['standard:webapp', 'express', 'watch'])
@@ -26,6 +27,24 @@ module.exports = function (grunt) {
         src: [
           './webapp/**/*.js', './webapp/**/**/*.js'
         ]
+      },
+      source: {
+        src: [ './source/*.js' ]
+      }
+    },
+    run : {
+      d: {
+        cmd: 'node',
+        args: [
+          'server_side.js'
+        ]
+      },
+      standard: {
+        cmd: 'standard',
+        args: [
+          '-F',
+          './source/*.js'
+        ]
       }
     },
     browserify: {
@@ -44,15 +63,25 @@ module.exports = function (grunt) {
       }
     },
     watch: {
-      client_js: {
-        files: [ './source/*.js', './webapp/*.js', './index.html' ],
-        tasks: ['standard:webapp', 'browserify:main'],
+      // client_js: {
+      //   files: [ './source/*.js', './webapp/*.js', './index.html' ],
+      //   tasks: ['standard:webapp', 'browserify:main'],
+      //   options: {
+      //     livereload: {
+      //       port: 35729
+      //     }
+      //   }
+      // },
+      server_js: {
+        files: [ './source/*.js', ],
+        tasks: ['run:standard', 'run:d'],
         options: {
           livereload: {
             port: 35729
           }
         }
       }
+
     }
   })
 }

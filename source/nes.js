@@ -1,3 +1,5 @@
+// [x] converted
+
 var JSNES_CPU = require('./cpu.js')
 var JSNES_PPU = require('./ppu.js')
 var JSNES_PAPU = require('./papu.js')

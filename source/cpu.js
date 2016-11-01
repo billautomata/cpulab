@@ -1,3 +1,5 @@
+// converted
+
 JSNES_Utils = require('./utils.js')
 
 module.exports = JSNES_CPU
@@ -1152,7 +1154,7 @@ JSNES_CPU.prototype.load16bit = function (addr) {
   } else {
     return this.nes.mmap.load(addr) | (this.nes.mmap.load(addr + 1) << 8)
   }
-},
+}
 
 JSNES_CPU.prototype.write = function (addr, val) {
   if (addr < 0x2000) {
@@ -1160,7 +1162,7 @@ JSNES_CPU.prototype.write = function (addr, val) {
   } else {
     this.nes.mmap.write(addr, val)
   }
-},
+}
 
 JSNES_CPU.prototype.requestIrq = function (type) {
   if (this.irqRequested) {
@@ -1171,31 +1173,31 @@ JSNES_CPU.prototype.requestIrq = function (type) {
   }
   this.irqRequested = true
   this.irqType = type
-},
+}
 
 JSNES_CPU.prototype.push = function (value) {
   this.nes.mmap.write(this.REG_SP, value)
   this.REG_SP--
   this.REG_SP = 0x0100 | (this.REG_SP & 0xFF)
-},
+}
 
 JSNES_CPU.prototype.stackWrap = function () {
   this.REG_SP = 0x0100 | (this.REG_SP & 0xFF)
-},
+}
 
 JSNES_CPU.prototype.pull = function () {
   this.REG_SP++
   this.REG_SP = 0x0100 | (this.REG_SP & 0xFF)
   return this.nes.mmap.load(this.REG_SP)
-},
+}
 
 JSNES_CPU.prototype.pageCrossed = function (addr1, addr2) {
   return ((addr1 & 0xFF00) != (addr2 & 0xFF00))
-},
+}
 
 JSNES_CPU.prototype.haltCycles = function (cycles) {
   this.cyclesToHalt += cycles
-},
+}
 
 JSNES_CPU.prototype.doNonMaskableInterrupt = function (status) {
   if ((this.nes.mmap.load(0x2000) & 128) != 0) { // Check whether VBlank Interrupts are enabled
@@ -1209,12 +1211,12 @@ JSNES_CPU.prototype.doNonMaskableInterrupt = function (status) {
     this.REG_PC_NEW = this.nes.mmap.load(0xFFFA) | (this.nes.mmap.load(0xFFFB) << 8)
     this.REG_PC_NEW--
   }
-},
+}
 
 JSNES_CPU.prototype.doResetInterrupt = function () {
   this.REG_PC_NEW = this.nes.mmap.load(0xFFFC) | (this.nes.mmap.load(0xFFFD) << 8)
   this.REG_PC_NEW--
-},
+}
 
 JSNES_CPU.prototype.doIrq = function (status) {
   this.REG_PC_NEW++
@@ -1226,7 +1228,7 @@ JSNES_CPU.prototype.doIrq = function (status) {
 
   this.REG_PC_NEW = this.nes.mmap.load(0xFFFE) | (this.nes.mmap.load(0xFFFF) << 8)
   this.REG_PC_NEW--
-},
+}
 
 JSNES_CPU.prototype.getStatus = function () {
   return (this.F_CARRY)
@@ -1237,7 +1239,7 @@ JSNES_CPU.prototype.getStatus = function () {
   | (this.F_NOTUSED << 5)
   | (this.F_OVERFLOW << 6)
   | (this.F_SIGN << 7)
-},
+}
 
 JSNES_CPU.prototype.setStatus = function (st) {
   this.F_CARRY = (st   ) & 1
@@ -1248,7 +1250,7 @@ JSNES_CPU.prototype.setStatus = function (st) {
   this.F_NOTUSED = (st >> 5) & 1
   this.F_OVERFLOW = (st >> 6) & 1
   this.F_SIGN = (st >> 7) & 1
-},
+}
 
 JSNES_CPU.prototype.JSON_PROPERTIES = [
   'mem', 'cyclesToHalt', 'irqRequested', 'irqType',
