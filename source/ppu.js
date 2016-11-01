@@ -301,7 +301,7 @@ JSNES_PPU.prototype.setMirroring = function (mirroring) {
 
   }
 
-},
+}
 
 // Define a mirrored area in the address lookup table.
 // Assumes the regions don't overlap.
@@ -329,7 +329,7 @@ JSNES_PPU.prototype.startVBlank = function () {
 
   // Reset scanline counter:
   this.lastRenderedScanline = -1
-},
+}
 
 JSNES_PPU.prototype.endScanline = function () {
   switch (this.scanline) {
@@ -487,7 +487,7 @@ JSNES_PPU.prototype.startFrame = function () {
   for (i = 0; i < pixrendered.length; i++) {
     pixrendered[i] = 65
   }
-},
+}
 
 JSNES_PPU.prototype.endFrame = function () {
   var i, x, y
@@ -567,7 +567,7 @@ JSNES_PPU.prototype.updateControlReg1 = function (value) {
   this.regH = value & 1
   this.regS = (value >> 4) & 1
 
-},
+}
 
 JSNES_PPU.prototype.updateControlReg2 = function (value) {
   this.triggerRendering()
@@ -589,7 +589,7 @@ JSNES_PPU.prototype.setStatusFlag = function (flag, value) {
   var n = 1 << flag
   this.nes.cpu.mem[0x2002] =
     ((this.nes.cpu.mem[0x2002] & (255 - n)) | (value ? n : 0))
-},
+}
 
 // CPU Register $2002:
 // Read the Status Register.
@@ -611,7 +611,7 @@ JSNES_PPU.prototype.readStatusRegister = function () {
 // Write the SPR-RAM address that is used for sramWrite (Register 0x2004 in CPU memory map)
 JSNES_PPU.prototype.writeSRAMAddress = function (address) {
   this.sramAddress = address
-},
+}
 
 // CPU Register $2004 (R):
 // Read from SPR-RAM (Sprite RAM).
@@ -632,7 +632,7 @@ JSNES_PPU.prototype.sramWrite = function (value) {
   this.spriteRamWriteUpdate(this.sramAddress, value)
   this.sramAddress++ // Increment address
   this.sramAddress %= 0x100
-},
+}
 
 // CPU Register $2005:
 // Write to scroll registers.
@@ -690,7 +690,7 @@ JSNES_PPU.prototype.writeVRAMAddress = function (address) {
   if (this.vramAddress < 0x2000) {
     this.nes.mmap.latchAccess(this.vramAddress)
   }
-},
+}
 
 // CPU Register $2007(R):
 // Read from PPU memory. The address should be set first.
@@ -764,7 +764,7 @@ JSNES_PPU.prototype.vramWrite = function (value) {
   this.regsFromAddress()
   this.cntsFromAddress()
 
-},
+}
 
 // CPU Register $4014:
 // Write 256 bytes of main memory
@@ -780,7 +780,7 @@ JSNES_PPU.prototype.sramDMA = function (value) {
 
   this.nes.cpu.haltCycles(513)
 
-},
+}
 
 // Updates the scroll registers from a new VRAM address.
 JSNES_PPU.prototype.regsFromAddress = function () {
@@ -793,7 +793,7 @@ JSNES_PPU.prototype.regsFromAddress = function () {
   address = this.vramTmpAddress & 0xFF
   this.regVT = (this.regVT & 24) | ((address >> 5) & 7)
   this.regHT = address & 31
-},
+}
 
 // Updates the scroll registers from a new VRAM address.
 JSNES_PPU.prototype.cntsFromAddress = function () {

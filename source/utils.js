@@ -1,4 +1,4 @@
-JSNES_Utils = {}
+var JSNES_Utils = {}
 
 JSNES_Utils.copyArrayElements = function (src, srcPos, dest, destPos, length) {
   for (var i = 0; i < length; ++i) {

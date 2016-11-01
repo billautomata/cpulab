@@ -49,153 +49,154 @@ function JSNES_ROM (nes) {
   this.mapperName[71] = 'Camerica chip'
   this.mapperName[78] = 'Irem 74HC161/32-based'
   this.mapperName[91] = 'Pirate HK-SF3 chip'
+
+  // pasted from the prototype
+  this.VERTICAL_MIRRORING = 0
+  this.HORIZONTAL_MIRRORING = 1
+  this.FOURSCREEN_MIRRORING = 2
+  this.SINGLESCREEN_MIRRORING = 3
+  this.SINGLESCREEN_MIRRORING2 = 4
+  this.SINGLESCREEN_MIRRORING3 = 5
+  this.SINGLESCREEN_MIRRORING4 = 6
+  this.CHRROM_MIRRORING = 7
+
+  this.header = null
+  this.rom = null
+  this.vrom = null
+  this.vromTile = null
+
+  this.romCount = null
+  this.vromCount = null
+  this.mirroring = null
+  this.batteryRam = null
+  this.trainer = null
+  this.fourScreen = null
+  this.mapperType = null
+  this.valid = false
+
 }
 
-JSNES_ROM.prototype = {
-  // Mirroring types:
-  VERTICAL_MIRRORING: 0,
-  HORIZONTAL_MIRRORING: 1,
-  FOURSCREEN_MIRRORING: 2,
-  SINGLESCREEN_MIRRORING: 3,
-  SINGLESCREEN_MIRRORING2: 4,
-  SINGLESCREEN_MIRRORING3: 5,
-  SINGLESCREEN_MIRRORING4: 6,
-  CHRROM_MIRRORING: 7,
+// Mirroring types:
 
-  header: null,
-  rom: null,
-  vrom: null,
-  vromTile: null,
+JSNES_ROM.prototype.load = function (data) {
+  var i, j, v
 
-  romCount: null,
-  vromCount: null,
-  mirroring: null,
-  batteryRam: null,
-  trainer: null,
-  fourScreen: null,
-  mapperType: null,
-  valid: false,
-
-  load: function (data) {
-    var i, j, v
-
-    if (data.indexOf('NES\x1a') === -1) {
-      this.nes.ui.updateStatus('Not a valid NES ROM.')
-      return
+  if (data.indexOf('NES\x1a') === -1) {
+    this.nes.ui.updateStatus('Not a valid NES ROM.')
+    return
+  }
+  this.header = new Array(16)
+  for (i = 0; i < 16; i++) {
+    this.header[i] = data.charCodeAt(i) & 0xFF
+  }
+  this.romCount = this.header[4]
+  this.vromCount = this.header[5] * 2 // Get the number of 4kB banks, not 8kB
+  this.mirroring = ((this.header[6] & 1) !== 0 ? 1 : 0)
+  this.batteryRam = (this.header[6] & 2) !== 0
+  this.trainer = (this.header[6] & 4) !== 0
+  this.fourScreen = (this.header[6] & 8) !== 0
+  this.mapperType = (this.header[6] >> 4) | (this.header[7] & 0xF0)
+  /* TODO
+  if (this.batteryRam)
+      this.loadBatteryRam();*/
+  // Check whether byte 8-15 are zero's:
+  var foundError = false
+  for (i = 8; i < 16; i++) {
+    if (this.header[i] !== 0) {
+      foundError = true
+      break
     }
-    this.header = new Array(16)
-    for (i = 0; i < 16; i++) {
-      this.header[i] = data.charCodeAt(i) & 0xFF
-    }
-    this.romCount = this.header[4]
-    this.vromCount = this.header[5] * 2; // Get the number of 4kB banks, not 8kB
-    this.mirroring = ((this.header[6] & 1) !== 0 ? 1 : 0)
-    this.batteryRam = (this.header[6] & 2) !== 0
-    this.trainer = (this.header[6] & 4) !== 0
-    this.fourScreen = (this.header[6] & 8) !== 0
-    this.mapperType = (this.header[6] >> 4) | (this.header[7] & 0xF0)
-    /* TODO
-    if (this.batteryRam)
-        this.loadBatteryRam();*/
-    // Check whether byte 8-15 are zero's:
-    var foundError = false
-    for (i = 8; i < 16; i++) {
-      if (this.header[i] !== 0) {
-        foundError = true
+  }
+  if (foundError) {
+    this.mapperType &= 0xF // Ignore byte 7
+  }
+  // Load PRG-ROM banks:
+  this.rom = new Array(this.romCount)
+  var offset = 16
+  for (i = 0; i < this.romCount; i++) {
+    this.rom[i] = new Array(16384)
+    for (j = 0; j < 16384; j++) {
+      if (offset + j >= data.length) {
         break
       }
+      this.rom[i][j] = data.charCodeAt(offset + j) & 0xFF
     }
-    if (foundError) {
-      this.mapperType &= 0xF // Ignore byte 7
-    }
-    // Load PRG-ROM banks:
-    this.rom = new Array(this.romCount)
-    var offset = 16
-    for (i = 0; i < this.romCount; i++) {
-      this.rom[i] = new Array(16384)
-      for (j = 0; j < 16384; j++) {
-        if (offset + j >= data.length) {
-          break
-        }
-        this.rom[i][j] = data.charCodeAt(offset + j) & 0xFF
+    offset += 16384
+  }
+  // Load CHR-ROM banks:
+  this.vrom = new Array(this.vromCount)
+  for (i = 0; i < this.vromCount; i++) {
+    this.vrom[i] = new Array(4096)
+    for (j = 0; j < 4096; j++) {
+      if (offset + j >= data.length) {
+        break
       }
-      offset += 16384
+      this.vrom[i][j] = data.charCodeAt(offset + j) & 0xFF
     }
-    // Load CHR-ROM banks:
-    this.vrom = new Array(this.vromCount)
-    for (i = 0; i < this.vromCount; i++) {
-      this.vrom[i] = new Array(4096)
-      for (j = 0; j < 4096; j++) {
-        if (offset + j >= data.length) {
-          break
-        }
-        this.vrom[i][j] = data.charCodeAt(offset + j) & 0xFF
-      }
-      offset += 4096
-    }
+    offset += 4096
+  }
 
-    // Create VROM tiles:
-    this.vromTile = new Array(this.vromCount)
-    for (i = 0; i < this.vromCount; i++) {
-      this.vromTile[i] = new Array(256)
-      for (j = 0; j < 256; j++) {
-        this.vromTile[i][j] = new JSNES_PPU.Tile()
-      }
+  // Create VROM tiles:
+  this.vromTile = new Array(this.vromCount)
+  for (i = 0; i < this.vromCount; i++) {
+    this.vromTile[i] = new Array(256)
+    for (j = 0; j < 256; j++) {
+      this.vromTile[i][j] = new JSNES_PPU.Tile()
     }
+  }
 
-    // Convert CHR-ROM banks to tiles:
-    var tileIndex
-    var leftOver
-    for (v = 0; v < this.vromCount; v++) {
-      for (i = 0; i < 4096; i++) {
-        tileIndex = i >> 4
-        leftOver = i % 16
-        if (leftOver < 8) {
-          this.vromTile[v][tileIndex].setScanline(
-            leftOver,
-            this.vrom[v][i],
-            this.vrom[v][i + 8]
-          )
-        } else {
-          this.vromTile[v][tileIndex].setScanline(
-            leftOver - 8,
-            this.vrom[v][i - 8],
-            this.vrom[v][i]
-          )
-        }
+  // Convert CHR-ROM banks to tiles:
+  var tileIndex
+  var leftOver
+  for (v = 0; v < this.vromCount; v++) {
+    for (i = 0; i < 4096; i++) {
+      tileIndex = i >> 4
+      leftOver = i % 16
+      if (leftOver < 8) {
+        this.vromTile[v][tileIndex].setScanline(
+          leftOver,
+          this.vrom[v][i],
+          this.vrom[v][i + 8]
+        )
+      } else {
+        this.vromTile[v][tileIndex].setScanline(
+          leftOver - 8,
+          this.vrom[v][i - 8],
+          this.vrom[v][i]
+        )
       }
     }
+  }
 
-    this.valid = true
-  },
+  this.valid = true
+}
 
-  getMirroringType: function () {
-    if (this.fourScreen) {
-      return this.FOURSCREEN_MIRRORING
-    }
-    if (this.mirroring === 0) {
-      return this.HORIZONTAL_MIRRORING
-    }
-    return this.VERTICAL_MIRRORING
-  },
+JSNES_ROM.prototype.getMirroringType = function () {
+  if (this.fourScreen) {
+    return this.FOURSCREEN_MIRRORING
+  }
+  if (this.mirroring === 0) {
+    return this.HORIZONTAL_MIRRORING
+  }
+  return this.VERTICAL_MIRRORING
+}
 
-  getMapperName: function () {
-    if (this.mapperType >= 0 && this.mapperType < this.mapperName.length) {
-      return this.mapperName[this.mapperType]
-    }
-    return 'Unknown Mapper, ' + this.mapperType
-  },
+JSNES_ROM.prototype.getMapperName = function () {
+  if (this.mapperType >= 0 && this.mapperType < this.mapperName.length) {
+    return this.mapperName[this.mapperType]
+  }
+  return 'Unknown Mapper, ' + this.mapperType
+}
 
-  mapperSupported: function () {
-    return typeof JSNES_Mappers[this.mapperType] !== 'undefined'
-  },
+JSNES_ROM.prototype.mapperSupported = function () {
+  return typeof JSNES_Mappers[this.mapperType] !== 'undefined'
+}
 
-  createMapper: function () {
-    if (this.mapperSupported()) {
-      return new JSNES_Mappers[this.mapperType](this.nes)
-    } else {
-      this.nes.ui.updateStatus('This ROM uses a mapper not supported by JSNES: ' + this.getMapperName() + '(' + this.mapperType + ')')
-      return null
-    }
+JSNES_ROM.prototype.createMapper = function () {
+  if (this.mapperSupported()) {
+    return new JSNES_Mappers[this.mapperType](this.nes)
+  } else {
+    this.nes.ui.updateStatus('This ROM uses a mapper not supported by JSNES: ' + this.getMapperName() + '(' + this.mapperType + ')')
+    return null
   }
 }

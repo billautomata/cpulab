@@ -1,10 +1,10 @@
-// [x] converted 
+// [x] converted
 
 // Keyboard events are bound in the UI
 module.exports = JSNES_Keyboard
 
 function JSNES_Keyboard () {
-  if (!(this instanceof JSNES_Keyboard)) return new JSNES_Keyboard(nes)
+  if (!(this instanceof JSNES_Keyboard)) return new JSNES_Keyboard()
   var i
 
   this.keys = {

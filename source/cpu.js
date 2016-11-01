@@ -35,9 +35,9 @@ function JSNES_CPU (nes) {
   this.irqType = null
 
   // IRQ Types
-  var IRQ_NORMAL = 0
-  var IRQ_NMI = 1
-  var IRQ_RESET = 2
+  this.IRQ_NORMAL = 0
+  this.IRQ_NMI = 1
+  this.IRQ_RESET = 2
 
   this.reset()
 }
