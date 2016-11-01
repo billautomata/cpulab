@@ -25,8 +25,8 @@ function JSNES_PAPU (nes) {
   this.square1 = new JSNES_PAPU.ChannelSquare(this, true)
   this.square2 = new JSNES_PAPU.ChannelSquare(this, false)
   this.triangle = new JSNES_PAPU.ChannelTriangle(this)
-  this.noise = new JSNES_PAPU.ChannelNoise(this)
-  this.dmc = new JSNES_PAPU.ChannelDM(this)
+  this.noise = new JSNES_PAPU_ChannelNoise(this)
+  this.dmc = new JSNES_PAPU_ChannelDM(this)
 
   this.frameIrqCounter = null
   this.frameIrqCounterMax = 4
@@ -782,7 +782,8 @@ JSNES_PAPU.prototype.initDACtables = function () {
 }
 
 // ////
-JSNES_PAPU.ChannelDM = function (papu) {
+JSNES_PAPU_ChannelDM = function (papu) {
+  if (!(this instanceof JSNES_PAPU_ChannelDM)) return new JSNES_PAPU_ChannelDM()
   this.papu = papu
 
   this.MODE_NORMAL = 0
@@ -811,7 +812,7 @@ JSNES_PAPU.ChannelDM = function (papu) {
   this.reset()
 }
 
-JSNES_PAPU.ChannelDM.prototype.clockDmc = function () {
+JSNES_PAPU_ChannelDM.prototype.clockDmc = function () {
 
   // Only alter DAC value if the sample buffer has data:
   if (this.hasSample) {
@@ -852,7 +853,7 @@ JSNES_PAPU.ChannelDM.prototype.clockDmc = function () {
 
 }
 
-JSNES_PAPU.ChannelDM.endOfSample = function () {
+JSNES_PAPU_ChannelDM.prototype.endOfSample = function () {
   if (this.playLengthCounter === 0 && this.playMode === this.MODE_LOOP) {
 
     // Start from beginning of sample:
@@ -882,7 +883,7 @@ JSNES_PAPU.ChannelDM.endOfSample = function () {
 
 }
 
-JSNES_PAPU.ChannelDM.nextSample = function () {
+JSNES_PAPU_ChannelDM.prototype.nextSample = function () {
   // Fetch byte:
   this.data = this.papu.nes.mmap.load(this.playAddress)
   this.papu.nes.cpu.haltCycles(4)
@@ -896,7 +897,7 @@ JSNES_PAPU.ChannelDM.nextSample = function () {
   this.hasSample = true
 }
 
-JSNES_PAPU.ChannelDM.writeReg = function (address, value) {
+JSNES_PAPU_ChannelDM.prototype.writeReg = function (address, value) {
   if (address === 0x4010) {
 
     // Play mode, DMA Frequency
@@ -956,22 +957,22 @@ JSNES_PAPU.ChannelDM.writeReg = function (address, value) {
   }
 }
 
-JSNES_PAPU.ChannelDM.setEnabled = function (value) {
+JSNES_PAPU_ChannelDM.prototype.setEnabled = function (value) {
   if ((!this.isEnabled) && value) {
     this.playLengthCounter = this.playLength
   }
   this.isEnabled = value
 }
 
-JSNES_PAPU.ChannelDM.getLengthStatus = function () {
+JSNES_PAPU_ChannelDM.prototype.getLengthStatus = function () {
   return ((this.playLengthCounter === 0 || !this.isEnabled) ? 0 : 1)
 }
 
-JSNES_PAPU.ChannelDM.getIrqStatus = function () {
+JSNES_PAPU_ChannelDM.prototype.getIrqStatus = function () {
   return (this.irqGenerated ? 1 : 0)
 }
 
-JSNES_PAPU.ChannelDM.reset = function () {
+JSNES_PAPU_ChannelDM.prototype.reset = function () {
   this.isEnabled = false
   this.irqGenerated = false
   this.playMode = this.MODE_NORMAL
@@ -990,7 +991,8 @@ JSNES_PAPU.ChannelDM.reset = function () {
   this.data = 0
 }
 
-JSNES_PAPU.ChannelNoise = function (papu) {
+JSNES_PAPU_ChannelNoise = function (papu) {
+  if (!(this instanceof JSNES_PAPU_ChannelNoise)) return new JSNES_PAPU_ChannelNoise()
   this.papu = papu
 
   this.isEnabled = null
@@ -1018,7 +1020,7 @@ JSNES_PAPU.ChannelNoise = function (papu) {
   this.reset()
 }
 
-JSNES_PAPU.ChannelNoise.prototype.reset = function () {
+JSNES_PAPU_ChannelNoise.prototype.reset = function () {
   this.progTimerCount = 0
   this.progTimerMax = 0
   this.isEnabled = false
@@ -1038,7 +1040,7 @@ JSNES_PAPU.ChannelNoise.prototype.reset = function () {
   this.tmp = 0
 }
 
-JSNES_PAPU.ChannelNoise.prototype.clockLengthCounter = function () {
+JSNES_PAPU_ChannelNoise.prototype.clockLengthCounter = function () {
   if (this.lengthCounterEnable && this.lengthCounter > 0) {
     this.lengthCounter--
     if (this.lengthCounter === 0) {
@@ -1047,7 +1049,7 @@ JSNES_PAPU.ChannelNoise.prototype.clockLengthCounter = function () {
   }
 }
 
-JSNES_PAPU.ChannelNoise.prototype.clockEnvDecay = function () {
+JSNES_PAPU_ChannelNoise.prototype.clockEnvDecay = function () {
   if (this.envReset) {
     // Reset envelope:
     this.envReset = false
@@ -1067,13 +1069,13 @@ JSNES_PAPU.ChannelNoise.prototype.clockEnvDecay = function () {
   this.updateSampleValue()
 }
 
-JSNES_PAPU.ChannelNoise.prototype.updateSampleValue = function () {
+JSNES_PAPU_ChannelNoise.prototype.updateSampleValue = function () {
   if (this.isEnabled && this.lengthCounter > 0) {
     this.sampleValue = this.randomBit * this.masterVolume
   }
 }
 
-JSNES_PAPU.ChannelNoise.prototype.writeReg = function (address, value) {
+JSNES_PAPU_ChannelNoise.prototype.writeReg = function (address, value) {
   if (address === 0x400C) {
     // Volume/Envelope decay:
     this.envDecayDisable = ((value & 0x10) !== 0)
@@ -1096,7 +1098,7 @@ JSNES_PAPU.ChannelNoise.prototype.writeReg = function (address, value) {
 // updateSampleValue()
 }
 
-JSNES_PAPU.ChannelNoise.prototype.setEnabled = function (value) {
+JSNES_PAPU_ChannelNoise.prototype.setEnabled = function (value) {
   this.isEnabled = value
   if (!value) {
     this.lengthCounter = 0
@@ -1104,7 +1106,7 @@ JSNES_PAPU.ChannelNoise.prototype.setEnabled = function (value) {
   this.updateSampleValue()
 }
 
-JSNES_PAPU.ChannelNoise.prototype.getLengthStatus = function () {
+JSNES_PAPU_ChannelNoise.prototype.getLengthStatus = function () {
   return ((this.lengthCounter === 0 || !this.isEnabled) ? 0 : 1)
 }
 
