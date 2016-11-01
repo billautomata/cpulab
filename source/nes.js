@@ -1,7 +1,7 @@
 // [x] converted
 
 var JSNES_CPU = require('./cpu.js')
-var JSNES_PPU = require('./ppu.js')
+var JSNES_PPU = require('./ppu.js').JSNES_PPU
 var JSNES_PAPU = require('./papu.js')
 var JSNES_ROM = require('./rom.js')
 var JSNES_Keyboard = require('./keyboard.js')
@@ -43,9 +43,9 @@ function JSNES (opts) {
   this.mmap = null; // set in loadRom()
   this.keyboard = new JSNES_Keyboard()
 
-  var isRunning = false
-  var fpsFrameCount = 0
-  var romData = null
+  this.isRunning = false
+  this.fpsFrameCount = 0
+  this.romData = null
 }
 
 // Resets the system
@@ -87,10 +87,16 @@ JSNES.prototype.frame = function frame () {
   var cpu = this.cpu
   var ppu = this.ppu
   var papu = this.papu
+
+  console.log('in a frame')
+
+  // console.log(this.cpu)
+
   FRAMELOOP: for (;;) {
     if (cpu.cyclesToHalt === 0) {
       // Execute a CPU instruction
       cycles = cpu.emulate()
+
       if (emulateSound) {
         papu.clockFrameCounter(cycles)
       }
@@ -111,6 +117,9 @@ JSNES.prototype.frame = function frame () {
       }
     }
 
+    if (cycles > 0) {
+      console.log('true')
+    }
     for (; cycles > 0; cycles--) {
       if (ppu.curX === ppu.spr0HitX &&
         ppu.f_spVisibility === 1 &&
@@ -120,6 +129,7 @@ JSNES.prototype.frame = function frame () {
       }
 
       if (ppu.requestEndFrame) {
+        console.log('ppu request end frame')
         ppu.nmiCounter--
         if (ppu.nmiCounter === 0) {
           ppu.requestEndFrame = false
@@ -146,7 +156,7 @@ JSNES.prototype.printFps = function () {
       this.fpsFrameCount / ((now - this.lastFpsTime) / 1000)
         ).toFixed(2) + ' FPS'
   }
-  this.ui.updateStatus(s)
+  // this.ui.updateStatus(s)
   this.fpsFrameCount = 0
   this.lastFpsTime = now
 }

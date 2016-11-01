@@ -1,6 +1,5 @@
 // converted
-
-JSNES_Utils = require('./utils.js')
+var JSNES_Utils = require('./utils.js')
 
 module.exports = JSNES_CPU
 
@@ -88,7 +87,7 @@ JSNES_CPU.prototype.reset = function () {
   this.F_BRK = 1
   this.F_BRK_NEW = 1
 
-  this.opdata = new JSNES_CPU.OpData().opdata
+  this.opdata = new JSNES_CPU_OpData().opdata
   this.cyclesToHalt = 0
 
   // Reset crash flag:
@@ -104,6 +103,8 @@ JSNES_CPU.prototype.reset = function () {
 JSNES_CPU.prototype.emulate = function () {
   var temp
   var add
+
+  // console.log('in cpu emulate')
 
   // Check interrupts:
   if (this.irqRequested) {
@@ -283,6 +284,8 @@ JSNES_CPU.prototype.emulate = function () {
   // ----------------------------------------------------------------------------------------------------
   // Decode & execute instruction:
   // ----------------------------------------------------------------------------------------------------
+
+  // console.log(addr, opinf & 0xFF)
 
   // This should be compiled to a jump table.
   switch (opinf & 0xFF) {
@@ -1136,6 +1139,8 @@ JSNES_CPU.prototype.emulate = function () {
 
   } // end of switch
 
+  // console.log('cycle count', cycleCount)
+  // console.log(this.nes.crashMessage)
   return cycleCount
 
 }
@@ -1271,7 +1276,7 @@ JSNES_CPU.prototype.fromJSON = function (s) {
 }
 
 // Generates and provides an array of details about instructions
-JSNES_CPU.OpData = function () {
+function JSNES_CPU_OpData () {
   this.opdata = new Array(256)
 
   // Set all to invalid instruction (to detect crashes):
@@ -1637,98 +1642,98 @@ JSNES_CPU.OpData = function () {
     'Indirect Absolute   '
   )
 
-  var INS_ADC = 0
-  var INS_AND = 1
-  var INS_ASL = 2
+  this.INS_ADC = 0
+  this.INS_AND = 1
+  this.INS_ASL = 2
 
-  var INS_BCC = 3
-  var INS_BCS = 4
-  var INS_BEQ = 5
-  var INS_BIT = 6
-  var INS_BMI = 7
-  var INS_BNE = 8
-  var INS_BPL = 9
-  var INS_BRK = 10
-  var INS_BVC = 11
-  var INS_BVS = 12
+  this.INS_BCC = 3
+  this.INS_BCS = 4
+  this.INS_BEQ = 5
+  this.INS_BIT = 6
+  this.INS_BMI = 7
+  this.INS_BNE = 8
+  this.INS_BPL = 9
+  this.INS_BRK = 10
+  this.INS_BVC = 11
+  this.INS_BVS = 12
 
-  var INS_CLC = 13
-  var INS_CLD = 14
-  var INS_CLI = 15
-  var INS_CLV = 16
-  var INS_CMP = 17
-  var INS_CPX = 18
-  var INS_CPY = 19
+  this.INS_CLC = 13
+  this.INS_CLD = 14
+  this.INS_CLI = 15
+  this.INS_CLV = 16
+  this.INS_CMP = 17
+  this.INS_CPX = 18
+  this.INS_CPY = 19
 
-  var INS_DEC = 20
-  var INS_DEX = 21
-  var INS_DEY = 22
+  this.INS_DEC = 20
+  this.INS_DEX = 21
+  this.INS_DEY = 22
 
-  var INS_EOR = 23
+  this.INS_EOR = 23
 
-  var INS_INC = 24
-  var INS_INX = 25
-  var INS_INY = 26
+  this.INS_INC = 24
+  this.INS_INX = 25
+  this.INS_INY = 26
 
-  var INS_JMP = 27
-  var INS_JSR = 28
+  this.INS_JMP = 27
+  this.INS_JSR = 28
 
-  var INS_LDA = 29
-  var INS_LDX = 30
-  var INS_LDY = 31
-  var INS_LSR = 32
+  this.INS_LDA = 29
+  this.INS_LDX = 30
+  this.INS_LDY = 31
+  this.INS_LSR = 32
 
-  var INS_NOP = 33
+  this.INS_NOP = 33
 
-  var INS_ORA = 34
+  this.INS_ORA = 34
 
-  var INS_PHA = 35
-  var INS_PHP = 36
-  var INS_PLA = 37
-  var INS_PLP = 38
+  this.INS_PHA = 35
+  this.INS_PHP = 36
+  this.INS_PLA = 37
+  this.INS_PLP = 38
 
-  var INS_ROL = 39
-  var INS_ROR = 40
-  var INS_RTI = 41
-  var INS_RTS = 42
+  this.INS_ROL = 39
+  this.INS_ROR = 40
+  this.INS_RTI = 41
+  this.INS_RTS = 42
 
-  var INS_SBC = 43
-  var INS_SEC = 44
-  var INS_SED = 45
-  var INS_SEI = 46
-  var INS_STA = 47
-  var INS_STX = 48
-  var INS_STY = 49
+  this.INS_SBC = 43
+  this.INS_SEC = 44
+  this.INS_SED = 45
+  this.INS_SEI = 46
+  this.INS_STA = 47
+  this.INS_STX = 48
+  this.INS_STY = 49
 
-  var INS_TAX = 50
-  var INS_TAY = 51
-  var INS_TSX = 52
-  var INS_TXA = 53
-  var INS_TXS = 54
-  var INS_TYA = 55
+  this.INS_TAX = 50
+  this.INS_TAY = 51
+  this.INS_TSX = 52
+  this.INS_TXA = 53
+  this.INS_TXS = 54
+  this.INS_TYA = 55
 
-  var INS_DUMMY = 56 // dummy instruction used for 'halting' the processor some cycles
+  this.INS_DUMMY = 56 // dummy instruction used for 'halting' the processor some cycles
 
   // -------------------------------- //
 
   // Addressing modes:
-  var ADDR_ZP = 0
-  var ADDR_REL = 1
-  var ADDR_IMP = 2
-  var ADDR_ABS = 3
-  var ADDR_ACC = 4
-  var ADDR_IMM = 5
-  var ADDR_ZPX = 6
-  var ADDR_ZPY = 7
-  var ADDR_ABSX = 8
-  var ADDR_PREIDXIND = 10
-  var ADDR_ABSY = 9
-  var ADDR_POSTIDXIND = 11
-  var ADDR_INDABS = 12
+  this.ADDR_ZP = 0
+  this.ADDR_REL = 1
+  this.ADDR_IMP = 2
+  this.ADDR_ABS = 3
+  this.ADDR_ACC = 4
+  this.ADDR_IMM = 5
+  this.ADDR_ZPX = 6
+  this.ADDR_ZPY = 7
+  this.ADDR_ABSX = 8
+  this.ADDR_PREIDXIND = 10
+  this.ADDR_ABSY = 9
+  this.ADDR_POSTIDXIND = 11
+  this.ADDR_INDABS = 12
 
 }
 
-JSNES_CPU.OpData.prototype.setOp = function (inst, op, addr, size, cycles) {
+JSNES_CPU_OpData.prototype.setOp = function (inst, op, addr, size, cycles) {
   this.opdata[op] =
     ((inst & 0xFF)    ) |
     ((addr & 0xFF) << 8) |

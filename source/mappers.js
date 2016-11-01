@@ -1,10 +1,15 @@
-var JSNES_Mappers = {}
+module.exports.JSNES_Mappers_0 = JSNES_Mappers_0
+module.exports.JSNES_Mappers_1 = JSNES_Mappers_1
+module.exports.JSNES_Mappers_2 = JSNES_Mappers_2
+module.exports.JSNES_Mappers_4 = JSNES_Mappers_4
 
-JSNES_Mappers[0] = function (nes) {
+var JSNES_Utils = require('./utils.js')
+
+function JSNES_Mappers_0 (nes) {
   this.nes = nes
 }
 
-JSNES_Mappers[0].prototype.reset = function () {
+JSNES_Mappers_0.prototype.reset = function () {
   this.joy1StrobeState = 0
   this.joy2StrobeState = 0
   this.joypadLastWrite = 0
@@ -14,7 +19,7 @@ JSNES_Mappers[0].prototype.reset = function () {
   this.mouseY = null
 }
 
-JSNES_Mappers[0].prototype.write = function (address, value) {
+JSNES_Mappers_0.prototype.write = function (address, value) {
   if (address < 0x2000) {
     // Mirroring of RAM:
     this.nes.cpu.mem[address & 0x7FF] = value
@@ -36,7 +41,7 @@ JSNES_Mappers[0].prototype.write = function (address, value) {
   }
 }
 
-JSNES_Mappers[0].prototype.writelow = function (address, value) {
+JSNES_Mappers_0.prototype.writelow = function (address, value) {
   if (address < 0x2000) {
     // Mirroring of RAM:
     this.nes.cpu.mem[address & 0x7FF] = value
@@ -51,7 +56,7 @@ JSNES_Mappers[0].prototype.writelow = function (address, value) {
   }
 }
 
-JSNES_Mappers[0].prototype.load = function (address) {
+JSNES_Mappers_0.prototype.load = function (address) {
   // Wrap around:
   address &= 0xFFFF
 
@@ -69,7 +74,7 @@ JSNES_Mappers[0].prototype.load = function (address) {
   }
 }
 
-JSNES_Mappers[0].prototype.regLoad = function (address) {
+JSNES_Mappers_0.prototype.regLoad = function (address) {
   switch (address >> 12) { // use fourth nibble (0xF000)
     case 0:
       break
@@ -175,7 +180,7 @@ JSNES_Mappers[0].prototype.regLoad = function (address) {
   return 0
 }
 
-JSNES_Mappers[0].prototype.regWrite = function (address, value) {
+JSNES_Mappers_0.prototype.regWrite = function (address, value) {
   switch (address) {
     case 0x2000:
       // PPU Control register 1
@@ -248,7 +253,7 @@ JSNES_Mappers[0].prototype.regWrite = function (address, value) {
   }
 }
 
-JSNES_Mappers[0].prototype.joy1Read = function () {
+JSNES_Mappers_0.prototype.joy1Read = function () {
   var ret
 
   switch (this.joy1StrobeState) {
@@ -290,7 +295,7 @@ JSNES_Mappers[0].prototype.joy1Read = function () {
   return ret
 }
 
-JSNES_Mappers[0].prototype.joy2Read = function () {
+JSNES_Mappers_0.prototype.joy2Read = function () {
   var ret
 
   switch (this.joy2StrobeState) {
@@ -332,9 +337,9 @@ JSNES_Mappers[0].prototype.joy2Read = function () {
   return ret
 }
 
-JSNES_Mappers[0].prototype.loadROM = function () {
+JSNES_Mappers_0.prototype.loadROM = function () {
   if (!this.nes.rom.valid || this.nes.rom.romCount < 1) {
-    alert('NoMapper: Invalid ROM! Unable to load.')
+    console.log('NoMapper: Invalid ROM! Unable to load.')
     return
   }
 
@@ -352,7 +357,7 @@ JSNES_Mappers[0].prototype.loadROM = function () {
   this.nes.cpu.requestIrq(this.nes.cpu.IRQ_RESET)
 }
 
-JSNES_Mappers[0].prototype.loadPRGROM = function () {
+JSNES_Mappers_0.prototype.loadPRGROM = function () {
   if (this.nes.rom.romCount > 1) {
     // Load the two first banks into memory.
     this.loadRomBank(0, 0x8000)
@@ -364,7 +369,7 @@ JSNES_Mappers[0].prototype.loadPRGROM = function () {
   }
 }
 
-JSNES_Mappers[0].prototype.loadCHRROM = function () {
+JSNES_Mappers_0.prototype.loadCHRROM = function () {
   // //System.out.println("Loading CHR ROM..")
   if (this.nes.rom.vromCount > 0) {
     if (this.nes.rom.vromCount == 1) {
@@ -379,7 +384,7 @@ JSNES_Mappers[0].prototype.loadCHRROM = function () {
   }
 }
 
-JSNES_Mappers[0].prototype.loadBatteryRam = function () {
+JSNES_Mappers_0.prototype.loadBatteryRam = function () {
   if (this.nes.rom.batteryRam) {
     var ram = this.nes.rom.batteryRam
     if (ram !== null && ram.length == 0x2000) {
@@ -389,7 +394,7 @@ JSNES_Mappers[0].prototype.loadBatteryRam = function () {
   }
 }
 
-JSNES_Mappers[0].prototype.loadRomBank = function (bank, address) {
+JSNES_Mappers_0.prototype.loadRomBank = function (bank, address) {
   // Loads a ROM bank into the specified address.
   bank %= this.nes.rom.romCount
   // var data = this.nes.rom.rom[bank]
@@ -397,7 +402,7 @@ JSNES_Mappers[0].prototype.loadRomBank = function (bank, address) {
   JSNES_Utils.copyArrayElements(this.nes.rom.rom[bank], 0, this.nes.cpu.mem, address, 16384)
 }
 
-JSNES_Mappers[0].prototype.loadVromBank = function (bank, address) {
+JSNES_Mappers_0.prototype.loadVromBank = function (bank, address) {
   if (this.nes.rom.vromCount === 0) {
     return
   }
@@ -410,12 +415,12 @@ JSNES_Mappers[0].prototype.loadVromBank = function (bank, address) {
   JSNES_Utils.copyArrayElements(vromTile, 0, this.nes.ppu.ptTile, address >> 4, 256)
 }
 
-JSNES_Mappers[0].prototype.load32kRomBank = function (bank, address) {
+JSNES_Mappers_0.prototype.load32kRomBank = function (bank, address) {
   this.loadRomBank((bank * 2) % this.nes.rom.romCount, address)
   this.loadRomBank((bank * 2 + 1) % this.nes.rom.romCount, address + 16384)
 }
 
-JSNES_Mappers[0].prototype.load8kVromBank = function (bank4kStart, address) {
+JSNES_Mappers_0.prototype.load8kVromBank = function (bank4kStart, address) {
   if (this.nes.rom.vromCount === 0) {
     return
   }
@@ -426,7 +431,7 @@ JSNES_Mappers[0].prototype.load8kVromBank = function (bank4kStart, address) {
     address + 4096)
 }
 
-JSNES_Mappers[0].prototype.load1kVromBank = function (bank1k, address) {
+JSNES_Mappers_0.prototype.load1kVromBank = function (bank1k, address) {
   if (this.nes.rom.vromCount === 0) {
     return
   }
@@ -445,7 +450,7 @@ JSNES_Mappers[0].prototype.load1kVromBank = function (bank1k, address) {
   }
 }
 
-JSNES_Mappers[0].prototype.load2kVromBank = function (bank2k, address) {
+JSNES_Mappers_0.prototype.load2kVromBank = function (bank2k, address) {
   if (this.nes.rom.vromCount === 0) {
     return
   }
@@ -464,7 +469,7 @@ JSNES_Mappers[0].prototype.load2kVromBank = function (bank2k, address) {
   }
 }
 
-JSNES_Mappers[0].prototype.load8kRomBank = function (bank8k, address) {
+JSNES_Mappers_0.prototype.load8kRomBank = function (bank8k, address) {
   var bank16k = Math.floor(bank8k / 2) % this.nes.rom.romCount
   var offset = (bank8k % 2) * 8192
 
@@ -473,15 +478,15 @@ JSNES_Mappers[0].prototype.load8kRomBank = function (bank8k, address) {
     this.nes.cpu.mem, address, 8192)
 }
 
-JSNES_Mappers[0].prototype.clockIrqCounter = function () {
+JSNES_Mappers_0.prototype.clockIrqCounter = function () {
   // Does nothing. This is used by the MMC3 mapper.
 }
 
-JSNES_Mappers[0].prototype.latchAccess = function (address) {
+JSNES_Mappers_0.prototype.latchAccess = function (address) {
   // Does nothing. This is used by MMC2.
 }
 
-JSNES_Mappers[0].prototype.toJSON = function () {
+JSNES_Mappers_0.prototype.toJSON = function () {
   return {
     'joy1StrobeState': this.joy1StrobeState,
     'joy2StrobeState': this.joy2StrobeState,
@@ -489,20 +494,20 @@ JSNES_Mappers[0].prototype.toJSON = function () {
   }
 }
 
-JSNES_Mappers[0].prototype.fromJSON = function (s) {
+JSNES_Mappers_0.prototype.fromJSON = function (s) {
   this.joy1StrobeState = s.joy1StrobeState
   this.joy2StrobeState = s.joy2StrobeState
   this.joypadLastWrite = s.joypadLastWrite
 }
 
-JSNES_Mappers[1] = function (nes) {
+function JSNES_Mappers_1 (nes) {
   this.nes = nes
 }
 
-JSNES_Mappers[1].prototype = new JSNES_Mappers[0]()
+JSNES_Mappers_1.prototype = new JSNES_Mappers_0()
 
-JSNES_Mappers[1].prototype.reset = function () {
-  JSNES_Mappers[0].prototype.reset.apply(this)
+JSNES_Mappers_1.prototype.reset = function () {
+  JSNES_Mappers_0.prototype.reset.apply(this)
 
   // 5-bit buffer:
   this.regBuffer = 0
@@ -525,10 +530,10 @@ JSNES_Mappers[1].prototype.reset = function () {
   this.romBankSelect = 0
 }
 
-JSNES_Mappers[1].prototype.write = function (address, value) {
+JSNES_Mappers_1.prototype.write = function (address, value) {
   // Writes to addresses other than MMC registers are handled by NoMapper.
   if (address < 0x8000) {
-    JSNES_Mappers[0].prototype.write.apply(this, arguments)
+    JSNES_Mappers_0.prototype.write.apply(this, arguments)
     return
   }
 
@@ -563,7 +568,7 @@ JSNES_Mappers[1].prototype.write = function (address, value) {
   }
 }
 
-JSNES_Mappers[1].prototype.setReg = function (reg, value) {
+JSNES_Mappers_1.prototype.setReg = function (reg, value) {
   var tmp
 
   switch (reg) {
@@ -701,7 +706,7 @@ JSNES_Mappers[1].prototype.setReg = function (reg, value) {
 }
 
 // Returns the register number from the address written to:
-JSNES_Mappers[1].prototype.getRegNumber = function (address) {
+JSNES_Mappers_1.prototype.getRegNumber = function (address) {
   if (address >= 0x8000 && address <= 0x9FFF) {
     return 0
   }
@@ -715,9 +720,9 @@ JSNES_Mappers[1].prototype.getRegNumber = function (address) {
   }
 }
 
-JSNES_Mappers[1].prototype.loadROM = function (rom) {
+JSNES_Mappers_1.prototype.loadROM = function (rom) {
   if (!this.nes.rom.valid) {
-    alert('MMC1: Invalid ROM! Unable to load.')
+    console.log('MMC1: Invalid ROM! Unable to load.')
     return
   }
 
@@ -735,20 +740,20 @@ JSNES_Mappers[1].prototype.loadROM = function (rom) {
   this.nes.cpu.requestIrq(this.nes.cpu.IRQ_RESET)
 }
 
-JSNES_Mappers[1].prototype.switchLowHighPrgRom = function (oldSetting) {
+JSNES_Mappers_1.prototype.switchLowHighPrgRom = function (oldSetting) {
   // not yet.
 }
 
-JSNES_Mappers[1].prototype.switch16to32 = function () {
+JSNES_Mappers_1.prototype.switch16to32 = function () {
   // not yet.
 }
 
-JSNES_Mappers[1].prototype.switch32to16 = function () {
+JSNES_Mappers_1.prototype.switch32to16 = function () {
   // not yet.
 }
 
-JSNES_Mappers[1].prototype.toJSON = function () {
-  var s = JSNES_Mappers[0].prototype.toJSON.apply(this)
+JSNES_Mappers_1.prototype.toJSON = function () {
+  var s = JSNES_Mappers_0.prototype.toJSON.apply(this)
   s.mirroring = this.mirroring
   s.oneScreenMirroring = this.oneScreenMirroring
   s.prgSwitchingArea = this.prgSwitchingArea
@@ -762,8 +767,8 @@ JSNES_Mappers[1].prototype.toJSON = function () {
   return s
 }
 
-JSNES_Mappers[1].prototype.fromJSON = function (s) {
-  JSNES_Mappers[0].prototype.fromJSON.apply(this, s)
+JSNES_Mappers_1.prototype.fromJSON = function (s) {
+  JSNES_Mappers_0.prototype.fromJSON.apply(this, s)
   this.mirroring = s.mirroring
   this.oneScreenMirroring = s.oneScreenMirroring
   this.prgSwitchingArea = s.prgSwitchingArea
@@ -776,16 +781,16 @@ JSNES_Mappers[1].prototype.fromJSON = function (s) {
   this.regBufferCounter = s.regBufferCounter
 }
 
-JSNES_Mappers[2] = function (nes) {
+function JSNES_Mappers_2 (nes) {
   this.nes = nes
 }
 
-JSNES_Mappers[2].prototype = new JSNES_Mappers[0]()
+JSNES_Mappers_2.prototype = new JSNES_Mappers_0()
 
-JSNES_Mappers[2].prototype.write = function (address, value) {
+JSNES_Mappers_2.prototype.write = function (address, value) {
   // Writes to addresses other than MMC registers are handled by NoMapper.
   if (address < 0x8000) {
-    JSNES_Mappers[0].prototype.write.apply(this, arguments)
+    JSNES_Mappers_0.prototype.write.apply(this, arguments)
     return
   } else {
     // This is a ROM bank select command.
@@ -794,9 +799,9 @@ JSNES_Mappers[2].prototype.write = function (address, value) {
   }
 }
 
-JSNES_Mappers[2].prototype.loadROM = function (rom) {
+JSNES_Mappers_2.prototype.loadROM = function (rom) {
   if (!this.nes.rom.valid) {
-    alert('UNROM: Invalid ROM! Unable to load.')
+    console.log('UNROM: Invalid ROM! Unable to load.')
     return
   }
 
@@ -811,7 +816,7 @@ JSNES_Mappers[2].prototype.loadROM = function (rom) {
   this.nes.cpu.requestIrq(this.nes.cpu.IRQ_RESET)
 }
 
-JSNES_Mappers[4] = function (nes) {
+function JSNES_Mappers_4 (nes) {
   this.nes = nes
 
   this.CMD_SEL_2_1K_VROM_0000 = 0
@@ -833,12 +838,12 @@ JSNES_Mappers[4] = function (nes) {
   this.prgAddressChanged = false
 }
 
-JSNES_Mappers[4].prototype = new JSNES_Mappers[0]()
+JSNES_Mappers_4.prototype = new JSNES_Mappers_0()
 
-JSNES_Mappers[4].prototype.write = function (address, value) {
+JSNES_Mappers_4.prototype.write = function (address, value) {
   // Writes to addresses other than MMC registers are handled by NoMapper.
   if (address < 0x8000) {
-    JSNES_Mappers[0].prototype.write.apply(this, arguments)
+    JSNES_Mappers_0.prototype.write.apply(this, arguments)
     return
   }
 
@@ -906,7 +911,7 @@ JSNES_Mappers[4].prototype.write = function (address, value) {
   }
 }
 
-JSNES_Mappers[4].prototype.executeCommand = function (cmd, arg) {
+JSNES_Mappers_4.prototype.executeCommand = function (cmd, arg) {
   switch (cmd) {
     case this.CMD_SEL_2_1K_VROM_0000:
       // Select 2 1KB VROM pages at 0x0000:
@@ -1014,9 +1019,9 @@ JSNES_Mappers[4].prototype.executeCommand = function (cmd, arg) {
   }
 }
 
-JSNES_Mappers[4].prototype.loadROM = function (rom) {
+JSNES_Mappers_4.prototype.loadROM = function (rom) {
   if (!this.nes.rom.valid) {
-    alert('MMC3: Invalid ROM! Unable to load.')
+    console.log('MMC3: Invalid ROM! Unable to load.')
     return
   }
 
@@ -1038,7 +1043,7 @@ JSNES_Mappers[4].prototype.loadROM = function (rom) {
   this.nes.cpu.requestIrq(this.nes.cpu.IRQ_RESET)
 }
 
-JSNES_Mappers[4].prototype.clockIrqCounter = function () {
+JSNES_Mappers_4.prototype.clockIrqCounter = function () {
   if (this.irqEnable == 1) {
     this.irqCounter--
     if (this.irqCounter < 0) {
@@ -1050,8 +1055,8 @@ JSNES_Mappers[4].prototype.clockIrqCounter = function () {
   }
 }
 
-JSNES_Mappers[4].prototype.toJSON = function () {
-  var s = JSNES_Mappers[0].prototype.toJSON.apply(this)
+JSNES_Mappers_4.prototype.toJSON = function () {
+  var s = JSNES_Mappers_0.prototype.toJSON.apply(this)
   s.command = this.command
   s.prgAddressSelect = this.prgAddressSelect
   s.chrAddressSelect = this.chrAddressSelect
@@ -1063,8 +1068,8 @@ JSNES_Mappers[4].prototype.toJSON = function () {
   return s
 }
 
-JSNES_Mappers[4].prototype.fromJSON = function (s) {
-  JSNES_Mappers[0].prototype.fromJSON.apply(this, s)
+JSNES_Mappers_4.prototype.fromJSON = function (s) {
+  JSNES_Mappers_0.prototype.fromJSON.apply(this, s)
   this.command = s.command
   this.prgAddressSelect = s.prgAddressSelect
   this.chrAddressSelect = s.chrAddressSelect
@@ -1074,5 +1079,3 @@ JSNES_Mappers[4].prototype.fromJSON = function (s) {
   this.irqEnable = s.irqEnable
   this.prgAddressChanged = s.prgAddressChanged
 }
-
-module.exports = JSNES_Mappers

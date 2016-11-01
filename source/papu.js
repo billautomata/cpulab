@@ -22,9 +22,9 @@ function JSNES_PAPU (nes) {
   if (!(this instanceof JSNES_PAPU)) return new JSNES_PAPU(nes)
   this.nes = nes
 
-  this.square1 = new JSNES_PAPU.ChannelSquare(this, true)
-  this.square2 = new JSNES_PAPU.ChannelSquare(this, false)
-  this.triangle = new JSNES_PAPU.ChannelTriangle(this)
+  this.square1 = new JSNES_PAPU_ChannelSquare(this, true)
+  this.square2 = new JSNES_PAPU_ChannelSquare(this, false)
+  this.triangle = new JSNES_PAPU_ChannelTriangle(this)
   this.noise = new JSNES_PAPU_ChannelNoise(this)
   this.dmc = new JSNES_PAPU_ChannelDM(this)
 
@@ -782,7 +782,7 @@ JSNES_PAPU.prototype.initDACtables = function () {
 }
 
 // ////
-JSNES_PAPU_ChannelDM = function (papu) {
+function JSNES_PAPU_ChannelDM (papu) {
   if (!(this instanceof JSNES_PAPU_ChannelDM)) return new JSNES_PAPU_ChannelDM()
   this.papu = papu
 
@@ -991,7 +991,7 @@ JSNES_PAPU_ChannelDM.prototype.reset = function () {
   this.data = 0
 }
 
-JSNES_PAPU_ChannelNoise = function (papu) {
+function JSNES_PAPU_ChannelNoise (papu) {
   if (!(this instanceof JSNES_PAPU_ChannelNoise)) return new JSNES_PAPU_ChannelNoise()
   this.papu = papu
 
@@ -1110,7 +1110,7 @@ JSNES_PAPU_ChannelNoise.prototype.getLengthStatus = function () {
   return ((this.lengthCounter === 0 || !this.isEnabled) ? 0 : 1)
 }
 
-JSNES_PAPU.ChannelSquare = function (papu, square1) {
+function JSNES_PAPU_ChannelSquare (papu, square1) {
   this.papu = papu
 
   this.dutyLookup = [
@@ -1156,7 +1156,7 @@ JSNES_PAPU.ChannelSquare = function (papu, square1) {
   this.reset()
 }
 
-JSNES_PAPU.ChannelSquare.prototype.reset = function () {
+JSNES_PAPU_ChannelSquare.prototype.reset = function () {
   this.progTimerCount = 0
   this.progTimerMax = 0
   this.lengthCounter = 0
@@ -1180,7 +1180,7 @@ JSNES_PAPU.ChannelSquare.prototype.reset = function () {
   this.envDecayLoopEnable = false
 }
 
-JSNES_PAPU.ChannelSquare.prototype.clockLengthCounter = function () {
+JSNES_PAPU_ChannelSquare.prototype.clockLengthCounter = function () {
   if (this.lengthCounterEnable && this.lengthCounter > 0) {
     this.lengthCounter--
     if (this.lengthCounter === 0) {
@@ -1189,7 +1189,7 @@ JSNES_PAPU.ChannelSquare.prototype.clockLengthCounter = function () {
   }
 }
 
-JSNES_PAPU.ChannelSquare.prototype.clockEnvDecay = function () {
+JSNES_PAPU_ChannelSquare.prototype.clockEnvDecay = function () {
   if (this.envReset) {
     // Reset envelope:
     this.envReset = false
@@ -1209,7 +1209,7 @@ JSNES_PAPU.ChannelSquare.prototype.clockEnvDecay = function () {
   this.updateSampleValue()
 }
 
-JSNES_PAPU.ChannelSquare.prototype.clockSweep = function () {
+JSNES_PAPU_ChannelSquare.prototype.clockSweep = function () {
   if (--this.sweepCounter <= 0) {
     this.sweepCounter = this.sweepCounterMax + 1
     if (this.sweepActive && this.sweepShiftAmount > 0 && this.progTimerMax > 7) {
@@ -1234,7 +1234,7 @@ JSNES_PAPU.ChannelSquare.prototype.clockSweep = function () {
   }
 }
 
-JSNES_PAPU.ChannelSquare.prototype.updateSampleValue = function () {
+JSNES_PAPU_ChannelSquare.prototype.updateSampleValue = function () {
   if (this.isEnabled && this.lengthCounter > 0 && this.progTimerMax > 7) {
     if (this.sweepMode === 0 && (this.progTimerMax + (this.progTimerMax >> this.sweepShiftAmount)) > 4095) {
       // if (this.sweepCarry) {
@@ -1247,7 +1247,7 @@ JSNES_PAPU.ChannelSquare.prototype.updateSampleValue = function () {
   }
 }
 
-JSNES_PAPU.ChannelSquare.prototype.writeReg = function (address, value) {
+JSNES_PAPU_ChannelSquare.prototype.writeReg = function (address, value) {
   var addrAdd = (this.sqr1 ? 0 : 4)
   if (address === 0x4000 + addrAdd) {
     // Volume/Envelope decay:
@@ -1286,7 +1286,7 @@ JSNES_PAPU.ChannelSquare.prototype.writeReg = function (address, value) {
   }
 }
 
-JSNES_PAPU.ChannelSquare.prototype.setEnabled = function (value) {
+JSNES_PAPU_ChannelSquare.prototype.setEnabled = function (value) {
   this.isEnabled = value
   if (!value) {
     this.lengthCounter = 0
@@ -1294,11 +1294,11 @@ JSNES_PAPU.ChannelSquare.prototype.setEnabled = function (value) {
   this.updateSampleValue()
 }
 
-JSNES_PAPU.ChannelSquare.prototype.getLengthStatus = function () {
+JSNES_PAPU_ChannelSquare.prototype.getLengthStatus = function () {
   return ((this.lengthCounter === 0 || !this.isEnabled) ? 0 : 1)
 }
 
-JSNES_PAPU.ChannelTriangle = function (papu) {
+function JSNES_PAPU_ChannelTriangle (papu) {
   this.papu = papu
 
   this.isEnabled = null
@@ -1319,7 +1319,7 @@ JSNES_PAPU.ChannelTriangle = function (papu) {
   this.reset()
 }
 
-JSNES_PAPU.ChannelTriangle.prototype.reset = function () {
+JSNES_PAPU_ChannelTriangle.prototype.reset = function () {
   this.progTimerCount = 0
   this.progTimerMax = 0
   this.triangleCounter = 0
@@ -1335,7 +1335,7 @@ JSNES_PAPU.ChannelTriangle.prototype.reset = function () {
   this.sampleValue = 0xF
 }
 
-JSNES_PAPU.ChannelTriangle.prototype.clockLengthCounter = function () {
+JSNES_PAPU_ChannelTriangle.prototype.clockLengthCounter = function () {
   if (this.lengthCounterEnable && this.lengthCounter > 0) {
     this.lengthCounter--
     if (this.lengthCounter === 0) {
@@ -1344,7 +1344,7 @@ JSNES_PAPU.ChannelTriangle.prototype.clockLengthCounter = function () {
   }
 }
 
-JSNES_PAPU.ChannelTriangle.prototype.clockLinearCounter = function () {
+JSNES_PAPU_ChannelTriangle.prototype.clockLinearCounter = function () {
   if (this.lcHalt) {
     // Load:
     this.linearCounter = this.lcLoadValue
@@ -1361,15 +1361,15 @@ JSNES_PAPU.ChannelTriangle.prototype.clockLinearCounter = function () {
   }
 }
 
-JSNES_PAPU.ChannelTriangle.prototype.getLengthStatus = function () {
+JSNES_PAPU_ChannelTriangle.prototype.getLengthStatus = function () {
   return ((this.lengthCounter === 0 || !this.isEnabled) ? 0 : 1)
 }
 
-JSNES_PAPU.ChannelTriangle.prototype.readReg = function (address) {
+JSNES_PAPU_ChannelTriangle.prototype.readReg = function (address) {
   return 0
 }
 
-JSNES_PAPU.ChannelTriangle.prototype.writeReg = function (address, value) {
+JSNES_PAPU_ChannelTriangle.prototype.writeReg = function (address, value) {
   if (address === 0x4008) {
     // New values for linear counter:
     this.lcControl = (value & 0x80) !== 0
@@ -1395,7 +1395,7 @@ JSNES_PAPU.ChannelTriangle.prototype.writeReg = function (address, value) {
   this.updateSampleCondition()
 }
 
-JSNES_PAPU.ChannelTriangle.prototype.clockProgrammableTimer = function (nCycles) {
+JSNES_PAPU_ChannelTriangle.prototype.clockProgrammableTimer = function (nCycles) {
   if (this.progTimerMax > 0) {
     this.progTimerCount += nCycles
     while (this.progTimerMax > 0 &&
@@ -1409,12 +1409,12 @@ JSNES_PAPU.ChannelTriangle.prototype.clockProgrammableTimer = function (nCycles)
   }
 }
 
-JSNES_PAPU.ChannelTriangle.prototype.clockTriangleGenerator = function () {
+JSNES_PAPU_ChannelTriangle.prototype.clockTriangleGenerator = function () {
   this.triangleCounter++
   this.triangleCounter &= 0x1F
 }
 
-JSNES_PAPU.ChannelTriangle.prototype.setEnabled = function (value) {
+JSNES_PAPU_ChannelTriangle.prototype.setEnabled = function (value) {
   this.isEnabled = value
   if (!value) {
     this.lengthCounter = 0
@@ -1422,7 +1422,7 @@ JSNES_PAPU.ChannelTriangle.prototype.setEnabled = function (value) {
   this.updateSampleCondition()
 }
 
-JSNES_PAPU.ChannelTriangle.prototype.updateSampleCondition = function () {
+JSNES_PAPU_ChannelTriangle.prototype.updateSampleCondition = function () {
   this.sampleCondition = this.isEnabled &&
     this.progTimerMax > 7 &&
     this.linearCounter > 0 &&

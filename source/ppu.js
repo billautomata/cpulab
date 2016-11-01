@@ -1,4 +1,5 @@
-module.exports = JSNES_PPU
+module.exports.JSNES_PPU = JSNES_PPU
+module.exports.JSNES_PPU_Tile = JSNES_PPU_Tile
 
 var JSNES_Utils = require('./utils.js')
 
@@ -80,10 +81,10 @@ function JSNES_PPU (nes) {
   this.showSpr0Hit = false
   this.clipToTvSize = true
 
-  var STATUS_VRAMWRITE = 4
-  var STATUS_SLSPRITECOUNT = 5
-  var STATUS_SPRITE0HIT = 6
-  var STATUS_VBLANK = 7
+  this.STATUS_VRAMWRITE = 4
+  this.STATUS_SLSPRITECOUNT = 5
+  this.STATUS_SPRITE0HIT = 6
+  this.STATUS_VBLANK = 7
 
   this.reset()
 }
@@ -893,7 +894,7 @@ JSNES_PPU.prototype.mirroredWrite = function (address, value) {
       this.writeMem(this.vramMirrorTable[address], value)
     } else {
       // FIXME
-      alert('Invalid VRAM address: ' + address.toString(16))
+      console.log('Invalid VRAM address: ' + address.toString(16))
     }
 
   }

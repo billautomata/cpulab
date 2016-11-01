@@ -1,5 +1,9 @@
-var JSNES_PPU = require('./ppu.js')
-var JSNES_Mappers = require('./mappers.js')
+// var JSNES_PPU = require('./ppu.js').JSNES_PPU
+var JSNES_PPU_Tile = require('./ppu.js').JSNES_PPU_Tile
+var JSNES_Mappers_0 = require('./mappers.js').JSNES_Mappers_0
+var JSNES_Mappers_1 = require('./mappers.js').JSNES_Mappers_1
+var JSNES_Mappers_2 = require('./mappers.js').JSNES_Mappers_2
+var JSNES_Mappers_4 = require('./mappers.js').JSNES_Mappers_4
 
 module.exports = JSNES_ROM
 
@@ -141,7 +145,7 @@ JSNES_ROM.prototype.load = function (data) {
   for (i = 0; i < this.vromCount; i++) {
     this.vromTile[i] = new Array(256)
     for (j = 0; j < 256; j++) {
-      this.vromTile[i][j] = new JSNES_PPU.Tile()
+      this.vromTile[i][j] = new JSNES_PPU_Tile()
     }
   }
 
@@ -189,12 +193,59 @@ JSNES_ROM.prototype.getMapperName = function () {
 }
 
 JSNES_ROM.prototype.mapperSupported = function () {
-  return typeof JSNES_Mappers[this.mapperType] !== 'undefined'
+  switch (this.mapperType) {
+    case 0:
+      {
+      return typeof JSNES_Mappers_0 !== 'undefined'
+      break
+      }
+    case 1:
+      {
+      return typeof JSNES_Mappers_1 !== 'undefined'
+      break
+      }
+
+    case 2:
+      {
+      return typeof JSNES_Mappers_2 !== 'undefined'
+      break
+      }
+
+    case 4:
+      {
+      return typeof JSNES_Mappers_4 !== 'undefined'
+      break
+      }
+  }
+// return typeof JSNES_Mappers[this.mapperType] !== 'undefined'
 }
 
 JSNES_ROM.prototype.createMapper = function () {
   if (this.mapperSupported()) {
-    return new JSNES_Mappers[this.mapperType](this.nes)
+    switch (this.mapperType) {
+      case 0:
+        {
+        return new JSNES_Mappers_0(this.nes)
+        break
+        }
+      case 1:
+        {
+        return new JSNES_Mappers_1(this.nes)
+        break
+        }
+
+      case 2:
+        {
+        return new JSNES_Mappers_2(this.nes)
+        break
+        }
+
+      case 4:
+        {
+        return new JSNES_Mappers_4(this.nes)
+        break
+        }
+    }
   } else {
     this.nes.ui.updateStatus('This ROM uses a mapper not supported by JSNES: ' + this.getMapperName() + '(' + this.mapperType + ')')
     return null
